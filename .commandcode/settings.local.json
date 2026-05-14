@@ -1,0 +1,10 @@
+{
+  "disabledSkills": [
+    "firecrawl",
+    "firecrawl-crawl",
+    "firecrawl-map",
+    "firecrawl-scrape",
+    "firecrawl-search",
+    "redesign-existing-projects"
+  ]
+}
