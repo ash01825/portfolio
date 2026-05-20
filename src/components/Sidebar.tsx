@@ -68,8 +68,10 @@ export default function Sidebar({ activeFileId, onFileSelect, onOpenSearch }: Si
   return (
     <div className="mobile-drawer-panel w-64 h-full glass-panel glass-panel-inner rounded-[2rem] flex flex-col flex-shrink-0 z-20 overflow-hidden shadow-2xl">
       <div className="p-4 pt-6">
-        <div 
-          className="relative group cursor-pointer"
+        <button
+          type="button"
+          aria-label="Search notes"
+          className="relative group cursor-pointer block w-full text-left"
           onClick={onOpenSearch}
         >
           <Search size={14} className="absolute left-3 top-3 text-[var(--color-text-tertiary)] group-hover:text-[var(--color-text-primary)] transition-colors duration-200" />
@@ -81,7 +83,7 @@ export default function Sidebar({ activeFileId, onFileSelect, onOpenSearch }: Si
               ⌘K
             </kbd>
           </div>
-        </div>
+        </button>
       </div>
 
       <div className="flex-1 overflow-y-auto custom-scrollbar pb-4">

@@ -3,9 +3,15 @@
 import React from "react";
 import { useVault } from "../context/VaultContext";
 import CalendarCard from "./CalendarCard";
+import { slugifyHeading } from "../lib/slug";
 
 export default function RightSidebar({ activeFileId }: { activeFileId?: string }) {
   const { allFiles } = useVault();
+
+  const scrollToHeading = (text: string) => {
+    const target = document.getElementById(slugifyHeading(text));
+    target?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
 
   // Parse Headings for Outline
   const headings: { level: number, text: string }[] = [];
@@ -60,16 +66,18 @@ export default function RightSidebar({ activeFileId }: { activeFileId?: string }
             <div className="bg-white/5 rounded-2xl border border-white/5 p-3 space-y-2 shadow-inner">
               {headings.length > 0 ? (
                 headings.map((h, i) => (
-                  <div 
+                  <button
+                    type="button"
                     key={i} 
-                    className={`text-[13px] cursor-pointer hover:text-[var(--color-text-primary)] transition-fluid haptic-press truncate ${
+                    onClick={() => scrollToHeading(h.text)}
+                    className={`block w-full text-left text-[13px] hover:text-[var(--color-text-primary)] transition-fluid haptic-press truncate ${
                       h.level === 1 ? 'text-[var(--color-text-primary)]' : 
                       h.level === 2 ? 'text-[var(--color-text-secondary)] pl-2' : 
                       'text-[var(--color-text-tertiary)] pl-4'
                     }`}
                   >
                     {h.text}
-                  </div>
+                  </button>
                 ))
               ) : (
                 <div className="text-xs text-[var(--color-text-tertiary)] italic">No headings found</div>

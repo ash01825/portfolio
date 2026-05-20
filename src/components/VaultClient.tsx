@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, Suspense, useEffect } from "react";
+import React, { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Menu, X } from "lucide-react";
 import Sidebar from "./Sidebar";
@@ -23,18 +23,6 @@ function VaultApp() {
   const { allFiles } = useVault();
 
   const activeFile = allFiles.find((f) => f.id === activeFileId);
-
-  // Sync keyboard shortcut
-  useEffect(() => {
-    const handler = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
-        e.preventDefault();
-        setCommandPaletteOpen((v) => !v);
-      }
-    };
-    window.addEventListener("keydown", handler);
-    return () => window.removeEventListener("keydown", handler);
-  }, []);
 
   const navigate = (id: string) => {
     if (id === "graph") {
