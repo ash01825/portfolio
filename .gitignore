@@ -1,7 +1,4 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-./.commandcode
-AGENTS.md
-Screenshot 2026-05-14 at 12.20.24 PM.png
 
 # dependencies
 /node_modules
@@ -19,6 +16,8 @@ Screenshot 2026-05-14 at 12.20.24 PM.png
 # next.js
 /.next/
 /out/
+/.agents
+
 
 # production
 /build
