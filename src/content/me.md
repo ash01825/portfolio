@@ -14,7 +14,7 @@ outside of that i still enjoy competitive programming a lot. used to grind it wa
 
 i read books too. mostly non fiction, psychology, philosophy, business or random things that make me disappear for 5 hours straight. i'll probably make a proper section for that here later.
 
-also very into music, games and fictional characters i probably take too seriously. if i disappear for a few hours i'm either debugging something, researching some niche topic nobody asked about or replaying a game i've already finished three times.
+also very into sports, games and fictional characters i probably take too seriously. if i disappear for a few hours i'm either debugging something, researching some niche topic nobody asked about or replaying a game i've already finished three times.
 
 ## stuff worth opening first
 
