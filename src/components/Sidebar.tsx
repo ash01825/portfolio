@@ -31,10 +31,10 @@ export default function Sidebar({ activeFileId, onFileSelect, onOpenSearch }: Si
       return (
         <div
           key={item.id}
-          className={`flex items-center py-1.5 px-2 mx-2 my-0.5 rounded-lg cursor-pointer text-sm font-medium transition-all duration-200 ${
-            isActive ? "bg-[var(--color-bg-base)] text-[var(--color-text-primary)] border border-[var(--color-border-strong)] shadow-sm" : "text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-base)]/50 hover:text-[var(--color-text-primary)] border border-transparent"
+          className={`flex items-center py-2 px-2 mx-2 my-1 rounded-xl cursor-pointer text-[13px] font-medium transition-fluid haptic-press ${
+            isActive ? "bg-white/10 text-[var(--color-text-primary)] shadow-sm ring-1 ring-white/10" : "text-[var(--color-text-secondary)] hover:bg-white/5 hover:text-[var(--color-text-primary)]"
           }`}
-          style={{ paddingLeft: `${depth * 12 + 8}px` }}
+          style={{ paddingLeft: `${depth * 12 + 12}px` }}
           onClick={() => onFileSelect(item.id)}
         >
           <File size={14} className={`mr-2 flex-shrink-0 transition-colors duration-200 ${isActive ? 'text-[var(--color-accent-secondary)]' : 'text-[var(--color-text-tertiary)]'}`} />
@@ -46,8 +46,8 @@ export default function Sidebar({ activeFileId, onFileSelect, onOpenSearch }: Si
       return (
         <div key={item.id}>
           <div
-            className="flex items-center py-1.5 px-2 mx-2 my-1 rounded-lg cursor-pointer text-sm text-[var(--color-text-primary)] font-semibold hover:bg-[var(--color-bg-base)]/50 transition-colors duration-200"
-            style={{ paddingLeft: `${depth * 12 + 8}px` }}
+            className="flex items-center py-2 px-2 mx-2 my-1.5 rounded-xl cursor-pointer text-[13px] text-[var(--color-text-primary)] font-semibold hover:bg-white/5 transition-fluid haptic-press"
+            style={{ paddingLeft: `${depth * 12 + 12}px` }}
             onClick={() => toggleFolder(item.id)}
           >
             {isExpanded ? (
@@ -65,7 +65,7 @@ export default function Sidebar({ activeFileId, onFileSelect, onOpenSearch }: Si
   };
 
   return (
-    <div className="w-56 h-full bg-[var(--color-bg-panel)] backdrop-blur-xl border-r border-[var(--color-border-subtle)] flex flex-col flex-shrink-0 z-20">
+    <div className="w-64 h-full glass-panel glass-panel-inner rounded-[2rem] flex flex-col flex-shrink-0 z-20 overflow-hidden shadow-2xl">
       <div className="p-4 pt-6">
         <div 
           className="relative group cursor-pointer"
@@ -89,8 +89,8 @@ export default function Sidebar({ activeFileId, onFileSelect, onOpenSearch }: Si
         </div>
         
         <div
-          className={`flex items-center py-1.5 px-2 mx-2 my-0.5 rounded-lg cursor-pointer text-sm font-medium transition-colors ${
-            activeFileId === "graph" ? "bg-[var(--color-bg-base)] text-[var(--color-text-primary)] border border-[var(--color-border-strong)] shadow-sm" : "text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-base)]/50 hover:text-[var(--color-text-primary)] border border-transparent"
+          className={`flex items-center py-2 px-2 mx-2 my-1 rounded-xl cursor-pointer text-[13px] font-medium transition-fluid haptic-press ${
+            activeFileId === "graph" ? "bg-white/10 text-[var(--color-text-primary)] shadow-sm ring-1 ring-white/10" : "text-[var(--color-text-secondary)] hover:bg-white/5 hover:text-[var(--color-text-primary)]"
           }`}
           onClick={() => onFileSelect("graph")}
         >

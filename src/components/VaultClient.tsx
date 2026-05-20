@@ -35,49 +35,54 @@ function VaultApp() {
   };
 
   return (
-    <div className="flex h-screen w-screen overflow-hidden bg-[var(--color-bg-base)] text-[var(--color-text-primary)] font-sans">
+    <div className="relative flex h-[100dvh] w-screen overflow-hidden bg-[var(--color-bg-base)] text-[var(--color-text-primary)] font-sans">
+      <div className="bg-ambient-mesh" />
+      <div className="bg-noise" />
+
       <CommandPalette 
         isOpen={commandPaletteOpen} 
         setIsOpen={setCommandPaletteOpen} 
         activeFileId={activeFileId === "graph" ? null : activeFileId} 
         onFileSelect={(id) => setActiveFileId(id)} 
       />
-      <Sidebar 
-        activeFileId={activeFileId} 
-        onFileSelect={setActiveFileId} 
-        onOpenSearch={() => setCommandPaletteOpen(true)} 
-      />
-      
-      <main className="flex-1 flex flex-col h-full min-w-0 relative">
-        {/* Profile Header appears on the root Graph view */}
-        {activeFileId === "graph" && (
-          <div className="absolute top-12 left-0 right-0 z-10 pointer-events-none">
-            <div className="pointer-events-auto">
-              <ProfileHeader />
-            </div>
-            <div className="h-32 w-full bg-gradient-to-b from-[var(--color-bg-base)]/60 to-transparent backdrop-blur-[1px]" />
-          </div>
-        )}
 
-        {/* Main Content Area */}
-        <div className="flex-1 relative overflow-hidden flex flex-col">
-          {activeFileId === "graph" ? (
-            <div className="flex-1 pt-20 w-full h-full absolute inset-0">
-               <GraphView onNodeClick={setActiveFileId} />
-            </div>
-          ) : activeFile ? (
-            <div className="flex-1 w-full h-full overflow-y-auto">
-              <MarkdownView content={activeFile.content} onLinkClick={handleLinkClick} />
-            </div>
-          ) : (
-            <div className="flex items-center justify-center h-full text-[var(--color-text-secondary)]">
-              File not found
+      <div className="relative z-10 flex h-full w-full p-2 md:p-4 gap-2 md:gap-4">
+        <Sidebar 
+          activeFileId={activeFileId} 
+          onFileSelect={setActiveFileId} 
+          onOpenSearch={() => setCommandPaletteOpen(true)} 
+        />
+        
+        <main className="flex-1 flex flex-col h-full min-w-0 relative glass-panel glass-panel-inner rounded-[2rem] overflow-hidden">
+          {/* Profile Header appears on the root Graph view */}
+          {activeFileId === "graph" && (
+            <div className="absolute top-12 left-0 right-0 z-10 pointer-events-none">
+              <div className="pointer-events-auto">
+                <ProfileHeader />
+              </div>
             </div>
           )}
-        </div>
-      </main>
 
-      <RightSidebar activeFileId={activeFileId} />
+          {/* Main Content Area */}
+          <div className="flex-1 relative overflow-hidden flex flex-col">
+            {activeFileId === "graph" ? (
+              <div className="flex-1 pt-20 w-full h-full absolute inset-0">
+                 <GraphView onNodeClick={setActiveFileId} />
+              </div>
+            ) : activeFile ? (
+              <div className="flex-1 w-full h-full overflow-y-auto custom-scrollbar">
+                <MarkdownView content={activeFile.content} onLinkClick={handleLinkClick} />
+              </div>
+            ) : (
+              <div className="flex items-center justify-center h-full text-[var(--color-text-secondary)]">
+                File not found
+              </div>
+            )}
+          </div>
+        </main>
+
+        <RightSidebar activeFileId={activeFileId} />
+      </div>
     </div>
   );
 }

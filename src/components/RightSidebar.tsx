@@ -73,20 +73,20 @@ export default function RightSidebar({ activeFileId }: { activeFileId?: string }
     const isPast = iterDateOnly < todayOnly;
     const isTooFar = iterDateOnly > thirtyDaysFromNow;
     
-    let dayClass = 'text-[var(--color-text-secondary)] border border-transparent ';
+    let dayClass = 'text-[var(--color-text-secondary)] border border-transparent transition-fluid ';
     if (isToday) {
-      dayClass = 'bg-[var(--color-accent-primary)] text-white shadow-[0_0_10px_rgba(43,90,213,0.4)] cursor-pointer';
+      dayClass += 'bg-white/10 text-white shadow-sm ring-1 ring-white/10 cursor-pointer haptic-press';
     } else if (isPast || isTooFar) {
-      dayClass = 'text-[var(--color-text-tertiary)] opacity-30 cursor-not-allowed';
+      dayClass += 'text-[var(--color-text-tertiary)] opacity-30 cursor-not-allowed';
     } else {
-      dayClass = 'text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-base)] hover:text-[var(--color-text-primary)] hover:border-[var(--color-border-subtle)] cursor-pointer';
+      dayClass += 'text-[var(--color-text-secondary)] hover:bg-white/5 hover:text-[var(--color-text-primary)] cursor-pointer haptic-press';
     }
 
     calendarGrid.push(
       <div 
         key={`day-${i}`} 
         onClick={() => handleDateClick(i)}
-        className={`h-6 w-6 flex items-center justify-center text-[10px] font-medium rounded-full transition-colors ${dayClass}`}
+        className={`h-7 w-7 mx-auto flex items-center justify-center text-[10px] font-medium rounded-full ${dayClass}`}
         title={isPast ? 'Past date' : isTooFar ? 'Too far in advance' : `Schedule a meeting for ${month + 1}/${i}`}
       >
         {i}
@@ -112,8 +112,25 @@ export default function RightSidebar({ activeFileId }: { activeFileId?: string }
     }
   }
 
+  let totalLinks = 0;
+  let allTags = new Set<string>();
+  
+  allFiles.forEach(f => {
+    if (f.links) totalLinks += f.links.length;
+    if (f.content) {
+      // Find hashtags like #system-design, #ml, but ignore hex codes and headings
+      const tags = f.content.match(/(?<=\s|^)#[a-zA-Z0-9_-]+/g);
+      if (tags) {
+        tags.forEach(t => allTags.add(t.toLowerCase()));
+      }
+    }
+  });
+  
+  const totalFiles = allFiles.length;
+  const totalTags = allTags.size;
+
   return (
-    <div className="w-56 h-full bg-[var(--color-bg-panel)] backdrop-blur-xl border-l border-[var(--color-border-subtle)] flex flex-col flex-shrink-0 hidden lg:flex z-20">      
+    <div className="w-64 h-full glass-panel glass-panel-inner rounded-[2rem] flex flex-col flex-shrink-0 hidden lg:flex z-20 overflow-hidden shadow-2xl">      
       <div className="p-5 flex-1 overflow-y-auto custom-scrollbar">
 
         {/* Calendar Section */}
@@ -121,14 +138,14 @@ export default function RightSidebar({ activeFileId }: { activeFileId?: string }
           <div className="text-[10px] font-bold text-[var(--color-text-tertiary)] uppercase tracking-widest mb-3">
             Book a Meet
           </div>
-          <div className="p-3 bg-[var(--color-bg-base)]/50 rounded-xl border border-[var(--color-border-subtle)] shadow-sm">
+          <div className="p-3 bg-white/5 rounded-2xl border border-white/5 shadow-inner">
             <div className="flex items-center justify-between mb-3">
               <span className="text-xs font-bold text-[var(--color-text-primary)] tracking-wide">
                 {currentMonthName} <span className="text-[var(--color-text-tertiary)] font-normal">{year}</span>
               </span>
               <div className="flex space-x-1">
-                <ChevronLeft size={12} onClick={handlePrevMonth} className="text-[var(--color-text-secondary)] cursor-pointer hover:text-[var(--color-text-primary)]" />
-                <ChevronRight size={12} onClick={handleNextMonth} className="text-[var(--color-text-secondary)] cursor-pointer hover:text-[var(--color-text-primary)]" />
+                <ChevronLeft size={14} onClick={handlePrevMonth} className="text-[var(--color-text-secondary)] cursor-pointer hover:text-[var(--color-text-primary)] haptic-press transition-fluid" />
+                <ChevronRight size={14} onClick={handleNextMonth} className="text-[var(--color-text-secondary)] cursor-pointer hover:text-[var(--color-text-primary)] haptic-press transition-fluid" />
               </div>
             </div>
             
@@ -152,12 +169,12 @@ export default function RightSidebar({ activeFileId }: { activeFileId?: string }
             <div className="text-[10px] font-bold text-[var(--color-text-tertiary)] uppercase tracking-widest mb-3">
               Outline
             </div>
-            <div className="bg-[var(--color-bg-base)]/30 rounded-xl border border-[var(--color-border-subtle)] p-3 space-y-2">
+            <div className="bg-white/5 rounded-2xl border border-white/5 p-3 space-y-2 shadow-inner">
               {headings.length > 0 ? (
                 headings.map((h, i) => (
                   <div 
                     key={i} 
-                    className={`text-xs cursor-pointer hover:underline truncate ${
+                    className={`text-[13px] cursor-pointer hover:text-[var(--color-text-primary)] transition-fluid haptic-press truncate ${
                       h.level === 1 ? 'text-[var(--color-text-primary)]' : 
                       h.level === 2 ? 'text-[var(--color-text-secondary)] pl-2' : 
                       'text-[var(--color-text-tertiary)] pl-4'
@@ -176,18 +193,18 @@ export default function RightSidebar({ activeFileId }: { activeFileId?: string }
             <div className="text-[10px] font-bold text-[var(--color-text-tertiary)] uppercase tracking-widest mb-3">
               Vault Stats
             </div>
-            <div className="bg-[var(--color-bg-base)]/30 rounded-xl border border-[var(--color-border-subtle)] p-3">
+            <div className="bg-white/5 rounded-2xl border border-white/5 p-4 shadow-inner space-y-3">
               <div className="flex justify-between text-xs mb-2">
                 <span className="text-[var(--color-text-tertiary)]">Files</span>
-                <span className="text-[var(--color-text-primary)] font-mono">14</span>
+                <span className="text-[var(--color-text-primary)] font-mono">{totalFiles}</span>
               </div>
               <div className="flex justify-between text-xs mb-2">
                 <span className="text-[var(--color-text-tertiary)]">Links</span>
-                <span className="text-[var(--color-text-primary)] font-mono">22</span>
+                <span className="text-[var(--color-text-primary)] font-mono">{totalLinks}</span>
               </div>
               <div className="flex justify-between text-xs">
                 <span className="text-[var(--color-text-tertiary)]">Tags</span>
-                <span className="text-[var(--color-text-primary)] font-mono">3</span>
+                <span className="text-[var(--color-text-primary)] font-mono">{totalTags}</span>
               </div>
             </div>
           </div>

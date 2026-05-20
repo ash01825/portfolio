@@ -45,26 +45,26 @@ export default function CommandPalette({ isOpen, setIsOpen, activeFileId, onFile
     : allFiles.filter(f => f.name.toLowerCase().includes(query.toLowerCase()) || f.content.toLowerCase().includes(query.toLowerCase()));
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-start justify-center pt-[20vh] bg-black/60 backdrop-blur-sm" onClick={() => setIsOpen(false)}>
+    <div className="fixed inset-0 z-[100] flex items-start justify-center pt-[20vh] bg-black/60 backdrop-blur-md" onClick={() => setIsOpen(false)}>
       <div 
-        className="w-full max-w-2xl bg-[var(--color-bg-panel-solid)] border border-[var(--color-border-subtle)] shadow-[0_0_40px_rgba(0,0,0,0.5)] rounded-2xl overflow-hidden flex flex-col mx-4 animate-in fade-in zoom-in-95 duration-200"
+        className="w-full max-w-2xl glass-panel glass-panel-inner rounded-3xl overflow-hidden flex flex-col mx-4 animate-in fade-in zoom-in-95 duration-200 shadow-[0_0_100px_rgba(0,0,0,0.8)]"
         onClick={e => e.stopPropagation()}
       >
-        <div className="flex items-center px-4 py-4 border-b border-[var(--color-border-subtle)]">
-          <Search size={20} className="text-[var(--color-text-secondary)] mr-4" />
+        <div className="flex items-center px-6 py-5 border-b border-[var(--color-border-subtle)] bg-white/5">
+          <Search size={24} className="text-[var(--color-text-secondary)] mr-4" />
           <input 
             ref={inputRef}
             type="text" 
             placeholder="Search notes, projects, and logs..." 
             value={query}
             onChange={e => setQuery(e.target.value)}
-            className="flex-1 bg-transparent text-lg text-[var(--color-text-primary)] focus:outline-none placeholder:text-[var(--color-text-tertiary)]"
+            className="flex-1 bg-transparent text-xl text-[var(--color-text-primary)] font-semibold focus:outline-none placeholder:text-[var(--color-text-tertiary)]"
           />
-          <div className="text-[10px] font-mono font-medium text-[var(--color-text-tertiary)] bg-[var(--color-bg-base)] px-2 py-1 rounded border border-[var(--color-border-subtle)]">
+          <div className="text-[11px] font-mono font-medium text-[var(--color-text-tertiary)] bg-black/40 px-2 py-1 rounded border border-[var(--color-border-subtle)] shadow-inner">
             ESC
           </div>
         </div>
-        <div className="max-h-[50vh] overflow-y-auto custom-scrollbar p-2">
+        <div className="max-h-[50vh] overflow-y-auto custom-scrollbar p-3">
           {results.length > 0 ? (
             results.map(file => (
               <div 
@@ -73,14 +73,14 @@ export default function CommandPalette({ isOpen, setIsOpen, activeFileId, onFile
                   onFileSelect(file.id);
                   setIsOpen(false);
                 }}
-                className={`flex items-center px-3 py-2.5 rounded-lg cursor-pointer transition-colors ${activeFileId === file.id ? 'bg-[var(--color-accent-primary)]/10 text-[var(--color-accent-primary)]' : 'text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-base)] hover:text-[var(--color-text-primary)]'}`}
+                className={`flex items-center px-4 py-3 mb-1 rounded-xl cursor-pointer haptic-press transition-fluid ${activeFileId === file.id ? 'bg-white/10 text-[var(--color-text-primary)] shadow-sm ring-1 ring-white/10' : 'text-[var(--color-text-secondary)] hover:bg-white/5 hover:text-[var(--color-text-primary)]'}`}
               >
-                <File size={14} className="mr-3 flex-shrink-0" />
-                <span className="text-sm font-medium truncate">{file.name}</span>
+                <File size={16} className="mr-4 flex-shrink-0" />
+                <span className="text-[15px] font-medium truncate">{file.name}</span>
               </div>
             ))
           ) : (
-            <div className="px-4 py-8 text-center text-sm text-[var(--color-text-tertiary)]">
+            <div className="px-4 py-12 text-center text-sm text-[var(--color-text-tertiary)]">
               No results found for "<span className="text-[var(--color-text-primary)]">{query}</span>"
             </div>
           )}

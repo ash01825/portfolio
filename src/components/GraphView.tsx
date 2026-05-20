@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useCallback } from "react";
 import * as d3 from "d3";
 import { useVault } from "../context/VaultContext";
 
@@ -11,8 +11,10 @@ interface GraphViewProps {
 type Node = d3.SimulationNodeDatum & {
   id: string;
   name: string;
-  val: number;
-  color: string;
+  radius: number;
+  fillColor: string;
+  glowColor: string;
+  glowOpacity: number;
 };
 
 type Link = d3.SimulationLinkDatum<Node> & {
@@ -21,88 +23,207 @@ type Link = d3.SimulationLinkDatum<Node> & {
 };
 
 export default function GraphView({ onNodeClick }: GraphViewProps) {
-  const { vaultData, allFiles } = useVault();
+  const { allFiles } = useVault();
   const containerRef = useRef<HTMLDivElement>(null);
   const svgRef = useRef<SVGSVGElement>(null);
-  const [nodes, setNodes] = useState<Node[]>([]);
-  const [links, setLinks] = useState<Link[]>([]);
-  const [dimensions, setDimensions] = useState({ width: 800, height: 600 });
-  const [hoveredNode, setHoveredNode] = useState<string | null>(null);
-  const simulationRef = useRef<d3.Simulation<Node, Link> | null>(null);
-  const [transform, setTransform] = useState<d3.ZoomTransform>(d3.zoomIdentity);
 
-  useEffect(() => {
-    if (containerRef.current) {
-      const { width, height } = containerRef.current.getBoundingClientRect();
-      setDimensions({ width, height });
+  const getNodeStyle = useCallback((id: string, hasLinks: boolean) => {
+    if (id === "me") {
+      // Root node: bright warm brass, very visible
+      return { fillColor: "#e8c99a", glowColor: "#e8c99a", glowOpacity: 0.5 };
     }
-    
-    const handleResize = () => {
-      if (containerRef.current) {
-        const { width, height } = containerRef.current.getBoundingClientRect();
-        setDimensions({ width, height });
-      }
-    };
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    if (id.startsWith("knowledge")) {
+      // Knowledge: bright sage
+      return { fillColor: "#90c9ab", glowColor: "#90c9ab", glowOpacity: 0.4 };
+    }
+    if (id.startsWith("project") || id.startsWith("experience")) {
+      // Projects/experience: warm terracotta
+      return { fillColor: "#e0a882", glowColor: "#e0a882", glowOpacity: 0.4 };
+    }
+    // Generic files: muted warm white so they're still visible
+    return { fillColor: "#b0a898", glowColor: "#b0a898", glowOpacity: 0.25 };
   }, []);
 
   useEffect(() => {
-    if (dimensions.width === 0 || !svgRef.current) return;
+    if (!containerRef.current || !svgRef.current) return;
 
-    // Build graph data
-    const newNodes: Node[] = allFiles.map((f) => {
+    const container = containerRef.current;
+    const { width, height } = container.getBoundingClientRect();
+    if (width === 0) return;
+
+    // ── DATA ─────────────────────────────────────────────────────────────────
+    const nodeData: Node[] = allFiles.map((f) => {
       const isMe = f.id === "me";
+      const hasLinks = !!(f.links && f.links.length > 0);
+      const style = getNodeStyle(f.id, hasLinks);
       return {
         id: f.id,
         name: f.name,
-        val: isMe ? 2.5 : f.links ? 1.5 : 1,
-        color: isMe ? "var(--color-accent-gold)" : f.id.startsWith("knowledge") ? "var(--color-accent-secondary)" : f.id.startsWith("project") ? "var(--color-accent-primary)" : "var(--color-text-secondary)",
-        x: isMe ? dimensions.width / 2 : dimensions.width / 2 + (Math.random() - 0.5) * 200,
-        y: isMe ? dimensions.height / 2 : dimensions.height / 2 + (Math.random() - 0.5) * 200,
-        fx: isMe ? dimensions.width / 2 : undefined, // Pin me at center!
-        fy: isMe ? dimensions.height / 2 : undefined,
+        radius: isMe ? 12 : hasLinks ? 7 : 5,
+        ...style,
+        x: isMe ? width / 2 : width / 2 + (Math.random() - 0.5) * 280,
+        y: isMe ? height / 2 : height / 2 + (Math.random() - 0.5) * 280,
+        fx: isMe ? width / 2 : undefined,
+        fy: isMe ? height / 2 : undefined,
       };
     });
 
-    const newLinks: Link[] = [];
+    const nodeById = new Map(nodeData.map((n) => [n.id, n]));
+
+    const linkData: Link[] = [];
     allFiles.forEach((f) => {
       if (f.links) {
         f.links.forEach((targetId) => {
-          const found = allFiles.find((t) => t.id.toLowerCase() === targetId);
-          if (found) {
-            // Provide string IDs initially, D3 will replace with Node objects
-            newLinks.push({ source: f.id as any, target: found.id as any });
+          const src = nodeById.get(f.id);
+          const tgt = nodeData.find((n) => n.id.toLowerCase() === targetId.toLowerCase());
+          if (src && tgt) {
+            linkData.push({ source: src as any, target: tgt as any });
           }
         });
       }
     });
 
+    // ── SVG ───────────────────────────────────────────────────────────────────
+    const svg = d3.select(svgRef.current);
+    svg.selectAll("*").remove();
+
+    const root = svg.append("g").attr("class", "graph-root");
+
+    // ── LINKS ─────────────────────────────────────────────────────────────────
+    const linkEls = root.append("g")
+      .selectAll<SVGLineElement, Link>("line")
+      .data(linkData)
+      .join("line")
+      .attr("stroke", "rgba(240,237,232,0.18)")
+      .attr("stroke-width", 1.2)
+      .attr("stroke-linecap", "round");
+
+    // ── NODES ─────────────────────────────────────────────────────────────────
+    const nodeEls = root.append("g")
+      .selectAll<SVGGElement, Node>("g")
+      .data(nodeData)
+      .join("g")
+      .style("cursor", "pointer");
+
+    // Outer halo (very soft, wide)
+    nodeEls.append("circle")
+      .attr("class", "halo")
+      .attr("r", (d) => d.radius + 9)
+      .attr("fill", (d) => d.glowColor)
+      .attr("opacity", (d) => d.glowOpacity * 0.4);
+
+    // Inner glow ring
+    nodeEls.append("circle")
+      .attr("class", "ring")
+      .attr("r", (d) => d.radius + 3)
+      .attr("fill", (d) => d.glowColor)
+      .attr("opacity", (d) => d.glowOpacity * 0.65);
+
+    // Core — solid, bright, always visible
+    nodeEls.append("circle")
+      .attr("class", "core")
+      .attr("r", (d) => d.radius)
+      .attr("fill", (d) => d.fillColor)
+      .attr("stroke", "rgba(255,252,245,0.25)")
+      .attr("stroke-width", 1.2);
+
+    // Label
+    nodeEls.append("text")
+      .attr("class", "label")
+      .text((d) => d.name)
+      .attr("x", (d) => d.radius + 7)
+      .attr("y", 4)
+      .attr("font-size", (d) => (d.id === "me" ? 13 : 11))
+      .attr("font-weight", (d) => (d.id === "me" ? "600" : "400"))
+      .attr("font-family", "SF Pro Display, Geist Sans, Inter, sans-serif")
+      .attr("fill", (d) => (d.id === "me" ? "rgba(240,237,232,0.95)" : "rgba(240,237,232,0.55)"))
+      .attr("pointer-events", "none")
+      .attr("user-select", "none");
+
+    // ── INTERACTIONS ──────────────────────────────────────────────────────────
+    nodeEls
+      .on("mouseenter", function (_event, d) {
+        // Brighten connected links
+        linkEls
+          .attr("stroke", (l) => {
+            const s = (l.source as Node).id;
+            const t = (l.target as Node).id;
+            return s === d.id || t === d.id
+              ? "rgba(240,237,232,0.7)"
+              : "rgba(240,237,232,0.06)";
+          })
+          .attr("stroke-width", (l) => {
+            const s = (l.source as Node).id;
+            const t = (l.target as Node).id;
+            return s === d.id || t === d.id ? 2 : 0.8;
+          });
+
+        // Expand halo and ring
+        d3.select(this).select(".halo")
+          .transition().duration(160)
+          .attr("opacity", (d as Node).glowOpacity * 0.8);
+        d3.select(this).select(".ring")
+          .transition().duration(160)
+          .attr("opacity", (d as Node).glowOpacity);
+        d3.select(this).select(".core")
+          .transition().duration(160)
+          .attr("r", (d as Node).radius + 2);
+
+        // Brighten label
+        d3.select(this).select(".label")
+          .attr("fill", "rgba(240,237,232,0.97)")
+          .attr("font-weight", "600");
+      })
+      .on("mouseleave", function (_event, d) {
+        linkEls
+          .attr("stroke", "rgba(240,237,232,0.18)")
+          .attr("stroke-width", 1.2);
+
+        d3.select(this).select(".halo")
+          .transition().duration(250)
+          .attr("opacity", (d as Node).glowOpacity * 0.4);
+        d3.select(this).select(".ring")
+          .transition().duration(250)
+          .attr("opacity", (d as Node).glowOpacity * 0.65);
+        d3.select(this).select(".core")
+          .transition().duration(250)
+          .attr("r", (d as Node).radius);
+
+        d3.select(this).select(".label")
+          .attr("fill", (d as Node).id === "me" ? "rgba(240,237,232,0.95)" : "rgba(240,237,232,0.55)")
+          .attr("font-weight", (d as Node).id === "me" ? "600" : "400");
+      })
+      .on("click", (_event, d) => {
+        onNodeClick(d.id);
+      });
+
+    // ── SIMULATION ────────────────────────────────────────────────────────────
     const simulation = d3
-      .forceSimulation<Node>(newNodes)
-      .force("link", d3.forceLink<Node, Link>(newLinks).id((d) => d.id).distance(80))
-      .force("charge", d3.forceManyBody().strength(-200))
-      .force("center", d3.forceCenter(dimensions.width / 2, dimensions.height / 2 + 30))
-      .force("collide", d3.forceCollide<Node>().radius((d) => d.val * 6 + 15));
+      .forceSimulation<Node>(nodeData)
+      .force(
+        "link",
+        d3.forceLink<Node, Link>(linkData)
+          .id((d) => d.id)
+          .distance(110)
+          .strength(0.35)
+      )
+      .force("charge", d3.forceManyBody<Node>().strength(-260).distanceMax(420))
+      .force("center", d3.forceCenter(width / 2, height / 2 + 20).strength(0.04))
+      .force("collide", d3.forceCollide<Node>().radius((d) => d.radius + 22).strength(0.85))
+      .alphaDecay(0.022);
 
-    simulationRef.current = simulation;
-
+    // ── TICK — direct DOM, zero React state, zero CSS transitions on positions ─
     simulation.on("tick", () => {
-      setNodes([...simulation.nodes()]);
-      setLinks([...newLinks]);
+      linkEls
+        .attr("x1", (d) => (d.source as Node).x ?? 0)
+        .attr("y1", (d) => (d.source as Node).y ?? 0)
+        .attr("x2", (d) => (d.target as Node).x ?? 0)
+        .attr("y2", (d) => (d.target as Node).y ?? 0);
+
+      nodeEls.attr("transform", (d) => `translate(${d.x ?? 0},${d.y ?? 0})`);
     });
 
-    // Setup Zoom
-    const svg = d3.select(svgRef.current);
-    const zoom = d3.zoom<SVGSVGElement, unknown>()
-      .scaleExtent([0.3, 3])
-      .on("zoom", (event) => {
-        setTransform(event.transform);
-      });
-    
-    svg.call(zoom);
-    
-    // Setup Drag
+    // ── DRAG ──────────────────────────────────────────────────────────────────
     const drag = d3.drag<SVGGElement, Node>()
       .on("start", (event, d) => {
         if (!event.active) simulation.alphaTarget(0.3).restart();
@@ -115,124 +236,50 @@ export default function GraphView({ onNodeClick }: GraphViewProps) {
       })
       .on("end", (event, d) => {
         if (!event.active) simulation.alphaTarget(0);
-        // Leave fx/fy to pin the node where dropped, or null to unpin
-        // d.fx = null;
-        // d.fy = null;
+        // Unpin after drag (except "me" node)
+        if (d.id !== "me") {
+          d.fx = null;
+          d.fy = null;
+        }
       });
 
-    // We apply drag via refs after render, or we can just use React pointer events.
-    // Given React re-renders, it's easier to just attach drag to the <g> elements directly in a layout effect.
-    // See below in another useEffect.
+    nodeEls.call(drag as any);
+
+    // ── ZOOM ──────────────────────────────────────────────────────────────────
+    const zoom = d3.zoom<SVGSVGElement, unknown>()
+      .scaleExtent([0.2, 4])
+      .on("zoom", (event) => {
+        root.attr("transform", event.transform.toString());
+      });
+
+    svg.call(zoom);
+
+    // ── RESIZE ────────────────────────────────────────────────────────────────
+    const observer = new ResizeObserver(([entry]) => {
+      const { width: w, height: h } = entry.contentRect;
+      simulation
+        .force("center", d3.forceCenter(w / 2, h / 2 + 20).strength(0.04))
+        .alpha(0.3)
+        .restart();
+    });
+    observer.observe(container);
 
     return () => {
       simulation.stop();
+      observer.disconnect();
       svg.on(".zoom", null);
     };
-  }, [dimensions.width, dimensions.height]);
-
-  // Apply drag behavior after nodes render
-  useEffect(() => {
-    if (!svgRef.current || !simulationRef.current) return;
-    const svg = d3.select(svgRef.current);
-    
-    const drag = d3.drag<SVGGElement, Node>()
-      .on("start", (event, d) => {
-        if (!event.active) simulationRef.current?.alphaTarget(0.3).restart();
-        d.fx = d.x;
-        d.fy = d.y;
-      })
-      .on("drag", (event, d) => {
-        d.fx = event.x;
-        d.fy = event.y;
-      })
-      .on("end", (event, d) => {
-        if (!event.active) simulationRef.current?.alphaTarget(0);
-      });
-
-    // Select all node groups and bind the data so d3.drag knows the datum
-    svg.selectAll<SVGGElement, Node>(".graph-node")
-      .data(nodes)
-      .call(drag as any);
-      
-  }, [nodes]);
-
-  // Generate straight path (original obsidian style)
-  const generateStraightPath = (source: Node, target: Node) => {
-    if (!source || !target) return "";
-    const sx = source.x || 0;
-    const sy = source.y || 0;
-    const tx = target.x || 0;
-    const ty = target.y || 0;
-    return `M ${sx} ${sy} L ${tx} ${ty}`;
-  };
+  }, [allFiles, getNodeStyle]);
 
   return (
-    <div ref={containerRef} className="w-full h-full relative overflow-hidden flex-1">
-      <svg ref={svgRef} width="100%" height="100%" className="cursor-grab active:cursor-grabbing">
-        <g transform={`translate(${transform.x},${transform.y}) scale(${transform.k})`}>
-          {links.map((link, i) => {
-            const source = link.source;
-            const target = link.target;
-            const isHovered = hoveredNode === source.id || hoveredNode === target.id;
-            
-            return (
-              <path
-                key={`link-${i}`}
-                d={generateStraightPath(source, target)}
-                fill="none"
-                stroke={isHovered ? "var(--color-border-strong)" : "var(--color-border-subtle)"}
-                strokeWidth={isHovered ? 2 : 1.5}
-                className="transition-colors duration-300"
-                strokeLinejoin="round"
-                strokeLinecap="round"
-              />
-            );
-          })}
-          {nodes.map((node) => {
-            const isHovered = hoveredNode === node.id;
-            const isMe = node.id === "me";
-            return (
-              <g
-                key={node.id}
-                className="graph-node cursor-pointer"
-                transform={`translate(${node.x || 0},${node.y || 0})`}
-                onClick={(e) => {
-                  // Prevent click when dragging
-                  if (e.defaultPrevented) return; 
-                  onNodeClick(node.id);
-                }}
-                onMouseEnter={() => setHoveredNode(node.id)}
-                onMouseLeave={() => setHoveredNode(null)}
-              >
-                {/* Clean flat obsidian look */}
-                <circle
-                  r={isHovered ? node.val * 5 : node.val * 4}
-                  fill={node.color}
-                  stroke="var(--color-bg-base)"
-                  strokeWidth={2}
-                  className="transition-all duration-200"
-                />
-                
-                {/* Node Label (Obsidian Style) */}
-                <g transform={`translate(12, 4)`}>
-                  <text
-                    x={0}
-                    y={0}
-                    fill="var(--color-text-primary)"
-                    fontSize={11}
-                    fontWeight={400}
-                    className="select-none pointer-events-none transition-opacity duration-200"
-                    style={{ textShadow: "0px 2px 4px rgba(0,0,0,0.8)" }}
-                    opacity={isHovered || isMe || node.val >= 2 ? 1 : 0.4}
-                  >
-                    {node.name}
-                  </text>
-                </g>
-              </g>
-            );
-          })}
-        </g>
-      </svg>
+    <div ref={containerRef} className="w-full h-full relative overflow-hidden">
+      <svg
+        ref={svgRef}
+        width="100%"
+        height="100%"
+        className="cursor-grab active:cursor-grabbing"
+        style={{ display: "block" }}
+      />
     </div>
   );
 }

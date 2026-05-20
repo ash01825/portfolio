@@ -16,8 +16,21 @@
 # next.js
 /.next/
 /out/
-/.agents
 
+# AI Agent & Configuration Files
+/.agents
+/AGENTS.md
+/CLAUDE.md
+/mcp_config.json
+/.gemini/
+/.aider*
+
+# IDE & Misc Workspaces
+/.idea
+/.vscode
+*.code-workspace
+/temp_app/
+/migrate.js
 
 # production
 /build
@@ -25,14 +38,9 @@
 # misc
 .DS_Store
 *.pem
+*.log
 
-# debug
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-.pnpm-debug.log*
-
-# env files (can opt-in for committing if needed)
+# env files
 .env*
 
 # vercel
