@@ -72,15 +72,14 @@ function VaultApp() {
         onFileSelect={navigate}
       />
 
-      {/* Mobile Overlay */}
-      {mobileMenuOpen && (
-        <div
-          className="fixed inset-0 z-30 bg-black/60 backdrop-blur-sm md:hidden"
-          onClick={() => setMobileMenuOpen(false)}
-        />
-      )}
-
       <div className="relative z-10 flex h-full w-full p-2 md:p-4 gap-2 md:gap-4">
+        {/* Mobile Overlay */}
+        {mobileMenuOpen && (
+          <div
+            className="fixed inset-0 z-30 bg-black/35 md:hidden"
+            onClick={() => setMobileMenuOpen(false)}
+          />
+        )}
 
         {/* Sidebar — hidden on mobile unless mobileMenuOpen */}
         <div
@@ -132,8 +131,15 @@ function VaultApp() {
           {/* Main Content Area */}
           <div className="flex-1 relative overflow-hidden flex flex-col">
             {activeFileId === "graph" ? (
-              <div className="flex-1 md:pt-20 w-full h-full absolute inset-0">
-                <GraphView onNodeClick={navigate} />
+              <div className="flex-1 w-full h-full relative overflow-hidden">
+                <div className="absolute inset-0 pt-36 md:pt-20">
+                  <GraphView onNodeClick={navigate} />
+                </div>
+                <div className="relative z-10 md:hidden pointer-events-none">
+                  <div className="pointer-events-auto">
+                    <ProfileHeader compact />
+                  </div>
+                </div>
               </div>
             ) : activeFile ? (
               <div className="flex-1 w-full h-full overflow-y-auto custom-scrollbar">

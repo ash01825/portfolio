@@ -39,6 +39,22 @@ export default function MarkdownView({ content, onLinkClick }: MarkdownViewProps
                     </a>
                   );
                 }
+                if (props.href?.startsWith("/?file=") || props.href?.startsWith("?file=")) {
+                  const targetId = new URLSearchParams(props.href.split("?")[1]).get("file");
+                  return (
+                    <a
+                      href={props.href}
+                      onClick={(e) => {
+                        if (!targetId) return;
+                        e.preventDefault();
+                        onLinkClick(targetId);
+                      }}
+                      className="text-[var(--color-accent-primary)] font-medium bg-[var(--color-accent-primary)]/10 px-1.5 py-0.5 rounded-md hover:bg-[var(--color-accent-primary)]/20 transition-colors"
+                    >
+                      {props.children}
+                    </a>
+                  );
+                }
                 return <a target="_blank" rel="noopener noreferrer" className="font-medium text-[var(--color-accent-primary)] hover:underline transition-colors" {...props} />;
               },
               h1: ({node, ...props}) => <h1 className="text-3xl tracking-tight mb-8 font-bold text-[var(--color-text-primary)]" {...props} />,
