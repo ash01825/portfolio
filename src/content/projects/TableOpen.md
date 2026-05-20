@@ -1,4 +1,6 @@
 # TableOpen
+Github:https://github.com/ash01825/TableOpen
+
 
 An open-source database GUI I'm currently building.
 Fast, native and focused on the actual workflows developers use every day.
@@ -166,7 +168,6 @@ Working video:
 
 https://drive.google.com/file/d/13B_SN143MNpwvvTDM0b3PdloSGaUxlP8/view?usp=sharing
 
-Github:https://github.com/ash01825/TableOpen
 
 ## Notes
 

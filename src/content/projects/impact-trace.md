@@ -1,5 +1,11 @@
 # ImpactTrace
 
+Live Deployment:
+
+https://impacttrace22.vercel.app/
+
+Github: https://github.com/ash01825/ImpactTrace
+
 Know what breaks before you ship.
 
 ImpactTrace analyzes repository structure and uses AI-assisted dependency analysis to map the possible blast radius of a code change in seconds.
@@ -111,14 +117,6 @@ Some things that ended up being harder than expected:
 The streaming workflow and graph visualization ended up being some of the most interesting parts of the project.
 
 ---
-
-## Demo
-
-Live Deployment:
-
-https://impacttrace22.vercel.app/
-
-Github: https://github.com/ash01825/ImpactTrace
 
 ---
 
