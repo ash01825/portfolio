@@ -8,19 +8,17 @@ import Image from "next/image";
 
 export default function ProfileHeader({ compact = false }: { compact?: boolean }) {
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6, ease: [0.23, 1, 0.32, 1] }}
-      className={`flex items-start max-w-4xl mx-auto w-full z-10 ${
-        compact ? "px-4 pt-2 pb-3" : "flex-col md:flex-row md:items-center p-8 pb-4"
-      }`}
-    >
-      <motion.div 
-        whileHover={{ scale: 1.05 }}
-        className={`rounded-full overflow-hidden shrink-0 border border-[var(--color-border-strong)] relative shadow-2xl bg-[var(--color-bg-panel)] ${
-          compact ? "w-14 h-14 mr-4 mt-1" : "w-20 h-20 md:w-24 md:h-24 mb-4 md:mb-0 md:mr-6"
+      className={`flex items-start max-w-4xl mx-auto w-full z-10 ${compact ? "px-4 pt-2 pb-3" : "flex-col md:flex-row md:items-center p-8 pb-4"
         }`}
+    >
+      <motion.div
+        whileHover={{ scale: 1.05 }}
+        className={`rounded-full overflow-hidden shrink-0 border border-[var(--color-border-strong)] relative shadow-2xl bg-[var(--color-bg-panel)] ${compact ? "w-14 h-14 mr-4 mt-1" : "w-20 h-20 md:w-24 md:h-24 mb-4 md:mb-0 md:mr-6"
+          }`}
       >
         <Image src="/images/profile.jpeg" alt="Arsh" fill className="object-cover" />
       </motion.div>
@@ -47,7 +45,7 @@ export default function ProfileHeader({ compact = false }: { compact?: boolean }
             <FaLinkedin size={18} />
           </a>
           <div className="w-px h-4 bg-[var(--color-border-subtle)] mx-2" />
-          <a href="https://drive.google.com/file/d/1l8i6IiH9f6n2-oQZ2ZcGm0N-ebQKChBW" target="_blank" rel="noreferrer" className="text-xs font-medium flex items-center hover:text-[var(--color-text-primary)] transition-colors">
+          <a href="https://drive.google.com/file/d/1DAx_cLylvqjMQMa0LFuMzQ5qYzikgM7I" target="_blank" rel="noreferrer" className="text-xs font-medium flex items-center hover:text-[var(--color-text-primary)] transition-colors">
             Resume <ExternalLink size={12} className="ml-1" />
           </a>
         </div>
