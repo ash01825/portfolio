@@ -123,8 +123,8 @@ function VaultApp() {
               <div className="flex-1 md:pt-20 w-full h-full absolute inset-0">
                 <GraphView onNodeClick={navigate} />
               </div>
-            ) : activeFileId === "me" ? (
-              <BentoLanding onNavigate={navigate} />
+            ) : activeFileId === "me" && activeFile ? (
+              <BentoLanding onNavigate={navigate} content={activeFile.content} />
             ) : activeFile ? (
               <div className="flex-1 w-full h-full overflow-y-auto custom-scrollbar">
                 <MarkdownView

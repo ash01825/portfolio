@@ -4,12 +4,14 @@ import React from "react";
 import { motion, Variants } from "framer-motion";
 import { ArrowRight, Code2, Cpu, GitBranch, Globe, Terminal } from "lucide-react";
 import Image from "next/image";
+import MarkdownView from "./MarkdownView";
 
 interface BentoLandingProps {
   onNavigate: (id: string) => void;
+  content: string;
 }
 
-export default function BentoLanding({ onNavigate }: BentoLandingProps) {
+export default function BentoLanding({ onNavigate, content }: BentoLandingProps) {
   const containerVariants: Variants = {
     hidden: { opacity: 0 },
     show: {
@@ -73,7 +75,7 @@ export default function BentoLanding({ onNavigate }: BentoLandingProps) {
           <motion.div
             variants={itemVariants}
             className="md:col-span-1 lg:col-span-2 row-span-1 glass-panel glass-panel-inner rounded-3xl p-6 relative overflow-hidden group cursor-pointer"
-            onClick={() => onNavigate("project-tableopen")}
+            onClick={() => onNavigate("persona")}
           >
             <div className="flex items-start justify-between">
               <div>
@@ -81,7 +83,7 @@ export default function BentoLanding({ onNavigate }: BentoLandingProps) {
                   Currently Building
                 </div>
                 <h3 className="text-xl font-bold text-[var(--color-text-primary)] group-hover:text-[var(--color-accent-primary)] transition-colors">
-                  TableOpen
+                  Persona
                 </h3>
               </div>
               <div className="p-2 bg-[var(--color-accent-primary)]/10 rounded-xl text-[var(--color-accent-primary)]">
@@ -89,7 +91,7 @@ export default function BentoLanding({ onNavigate }: BentoLandingProps) {
               </div>
             </div>
             <p className="mt-3 text-xs text-[var(--color-text-secondary)] leading-relaxed line-clamp-2">
-              An open-source data pipeline and inference optimization engine.
+              Autonomous AI pipeline constructing multi-modal knowledge graphs of historical figures.
             </p>
           </motion.div>
 
@@ -99,14 +101,14 @@ export default function BentoLanding({ onNavigate }: BentoLandingProps) {
             className="md:col-span-1 lg:col-span-1 row-span-1 glass-panel glass-panel-inner rounded-3xl p-6 flex flex-col justify-center items-center text-center"
           >
             <Cpu size={24} className="text-[var(--color-accent-secondary)] mb-3" />
-            <div className="text-sm font-semibold text-[var(--color-text-primary)]">Distributed Systems</div>
-            <div className="text-[10px] text-[var(--color-text-tertiary)] mt-1">Go, Rust, Python</div>
+            <div className="text-sm font-semibold text-[var(--color-text-primary)]">AI/ML</div>
+            <div className="text-[10px] text-[var(--color-text-tertiary)] mt-1">Python, C++, CUDA</div>
           </motion.div>
 
           {/* Knowledge Node */}
           <motion.div
             variants={itemVariants}
-            onClick={() => onNavigate("knowledge-distributed-systems")}
+            onClick={() => onNavigate("LoRA-vs-QLoRA")}
             className="md:col-span-1 lg:col-span-1 row-span-1 glass-panel glass-panel-inner rounded-3xl p-6 cursor-pointer group flex flex-col justify-between"
           >
             <div className="flex justify-between items-center text-[var(--color-accent-gold)]">
@@ -118,7 +120,7 @@ export default function BentoLanding({ onNavigate }: BentoLandingProps) {
                 Knowledge Base
               </div>
               <div className="text-sm font-bold text-[var(--color-text-primary)]">
-                System Design Notes
+                Quantization
               </div>
             </div>
           </motion.div>
@@ -155,6 +157,11 @@ export default function BentoLanding({ onNavigate }: BentoLandingProps) {
           </motion.div>
           
         </motion.div>
+
+        {/* Full Markdown Content Rendered Below the Grid */}
+        <div className="mt-12 pt-8 border-t border-[var(--color-border-subtle)] relative z-10">
+          <MarkdownView content={content} onLinkClick={onNavigate} disableScroll />
+        </div>
       </div>
     </div>
   );

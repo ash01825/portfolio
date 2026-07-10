@@ -10,9 +10,10 @@ import { slugifyHeading } from "../lib/slug";
 interface MarkdownViewProps {
   content: string;
   onLinkClick: (id: string) => void;
+  disableScroll?: boolean;
 }
 
-export default function MarkdownView({ content, onLinkClick }: MarkdownViewProps) {
+export default function MarkdownView({ content, onLinkClick, disableScroll = false }: MarkdownViewProps) {
   const processedContent = content.replace(/\[\[(.*?)\]\]/g, (match, p1) => {
     return `[${p1}](#${p1.toLowerCase().replace(/ /g, "-")})`;
   });
@@ -34,7 +35,7 @@ export default function MarkdownView({ content, onLinkClick }: MarkdownViewProps
   const headingId = (children: React.ReactNode) => slugifyHeading(headingText(children));
 
   return (
-    <div className="w-full h-full p-8 md:p-16 overflow-y-auto custom-scrollbar bg-transparent">
+    <div className={`w-full h-full bg-transparent ${disableScroll ? 'p-0 pt-8' : 'p-8 md:p-16 overflow-y-auto custom-scrollbar'}`}>
       <motion.div
         key={content}
         initial={{ opacity: 0, y: 15 }}

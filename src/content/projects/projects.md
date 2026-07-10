@@ -6,5 +6,6 @@ Here are some of the projects I've been working on recently. Only sharing limite
 - [[impact-trace]]
 - [[Mini-Gpt]]
 - [[TableOpen]]
+- [[persona]]
 
 
