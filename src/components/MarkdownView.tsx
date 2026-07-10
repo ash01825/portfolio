@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { motion } from "framer-motion";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeRaw from "rehype-raw";
@@ -34,7 +35,13 @@ export default function MarkdownView({ content, onLinkClick }: MarkdownViewProps
 
   return (
     <div className="w-full h-full p-8 md:p-16 overflow-y-auto custom-scrollbar bg-transparent">
-      <div className="max-w-3xl mx-auto">
+      <motion.div
+        key={content}
+        initial={{ opacity: 0, y: 15 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ type: "spring", stiffness: 400, damping: 30 }}
+        className="max-w-3xl mx-auto"
+      >
         <article className="text-[var(--color-text-primary)] leading-7">
           <ReactMarkdown 
             remarkPlugins={[remarkGfm]} 
@@ -123,7 +130,7 @@ export default function MarkdownView({ content, onLinkClick }: MarkdownViewProps
             {processedContent}
           </ReactMarkdown>
         </article>
-      </div>
+      </motion.div>
     </div>
   );
 }

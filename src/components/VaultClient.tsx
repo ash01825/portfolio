@@ -7,6 +7,7 @@ import Sidebar from "./Sidebar";
 import RightSidebar from "./RightSidebar";
 import GraphView from "./GraphView";
 import MarkdownView from "./MarkdownView";
+import BentoLanding from "./BentoLanding";
 import ProfileHeader from "./ProfileHeader";
 import CommandPalette from "./CommandPalette";
 import { VaultProvider, useVault } from "../context/VaultContext";
@@ -119,16 +120,11 @@ function VaultApp() {
           {/* Main Content Area */}
           <div className="flex-1 relative overflow-hidden flex flex-col">
             {activeFileId === "graph" ? (
-              <div className="flex-1 w-full h-full relative overflow-hidden">
-                <div className="absolute inset-0 pt-36 md:pt-20">
-                  <GraphView onNodeClick={navigate} />
-                </div>
-                <div className="relative z-10 md:hidden pointer-events-none">
-                  <div className="pointer-events-auto">
-                    <ProfileHeader compact />
-                  </div>
-                </div>
+              <div className="flex-1 md:pt-20 w-full h-full absolute inset-0">
+                <GraphView onNodeClick={navigate} />
               </div>
+            ) : activeFileId === "me" ? (
+              <BentoLanding onNavigate={navigate} />
             ) : activeFile ? (
               <div className="flex-1 w-full h-full overflow-y-auto custom-scrollbar">
                 <MarkdownView
