@@ -45,7 +45,7 @@ export default function ProfileHeader({ compact = false }: { compact?: boolean }
             <FaLinkedin size={18} />
           </a>
           <div className="w-px h-4 bg-[var(--color-border-subtle)] mx-2" />
-          <a href="https://drive.google.com/file/d/1DAx_cLylvqjMQMa0LFuMzQ5qYzikgM7I" target="_blank" rel="noreferrer" className="text-xs font-medium flex items-center hover:text-[var(--color-text-primary)] transition-colors">
+          <a href="https://drive.google.com/file/d/1k483p6tLD7JOALW9jLXuW8CYKrYUynSD/view?usp=share_link" target="_blank" rel="noreferrer" className="text-xs font-medium flex items-center hover:text-[var(--color-text-primary)] transition-colors">
             Resume <ExternalLink size={12} className="ml-1" />
           </a>
         </div>

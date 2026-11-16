@@ -35,7 +35,7 @@ some notes are more "public blog" and some are just me thinking out loud. these 
 - [github](https://github.com/ash01825)
 - [twitter](https://x.com/JoyBoy_Ash)
 - [linkedin](https://www.linkedin.com/in/arsh-tulshyan)
-- [resume](https://drive.google.com/file/d/1l8i6IiH9f6n2-oQZ2ZcGm0N-ebQKChBW)
+- [resume](https://drive.google.com/file/d/1k483p6tLD7JOALW9jLXuW8CYKrYUynSD/view?usp=share_link)
 
 ## explore
 
